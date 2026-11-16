@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ksef
+      POSTGRES_USER: ksef
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ksef -d ksef"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://ksef:${POSTGRES_PASSWORD}@db:5432/ksef
+      DATA_DIR: /data
+    volumes:
+      - app_data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      # tylko lokalnie na VM; dostęp z Twojego komputera przez przekierowanie portu (VS Code / ssh -L)
+      - "127.0.0.1:8080:80"
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  app_data:

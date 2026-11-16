@@ -1,0 +1,26 @@
+.env
+frontend/node_modules
+frontend/dist
+__pycache__/
+*.pyc
+backend/data/
+cd ~/projekty/Ksef-app
+cat >> .gitignore <<'EOF'
+# sekrety i dane
+.env
+.env.*
+!.env.example
+ksef.conf
+*.key
+*.crt
+*.cer
+*.pem
+*.p12
+*.pfx
+data/
+raporty/
+# pliki robocze
+*.zip
+*.tsbuildinfo
+.venv/
+EOF
